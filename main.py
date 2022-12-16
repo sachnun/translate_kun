@@ -101,10 +101,36 @@ def languages():
                 },
             },
         },
+        400: {
+            "description": "Invalid destination language",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Invalid destination language",
+                        "lang": {
+                            "af": "afrikaans",
+                            "sq": "albanian",
+                            "...": "...",
+                        },
+                    },
+                },
+            },
+        },
     },
 )
 def translate(text: str, dest: Union[str, None] = "en"):
     translate = Translate(text)
+
+    # if invalid language
+    if dest not in translate.languages():
+        return JSONResponse(
+            content={
+                "message": "Invalid destination language",
+                "lang": translate.languages(),
+            },
+            status_code=400,
+        )
+
     return JSONResponse(
         content={
             "text": text,
