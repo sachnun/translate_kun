@@ -1,6 +1,5 @@
 from googletrans import Translator
 from googletrans import LANGUAGES
-from iso639 import languages
 
 tranlator = Translator()
 
