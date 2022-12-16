@@ -7,10 +7,18 @@ tranlator = Translator()
 class Translate:
     def __init__(self, text=None):
         self.text = text
+        self.pronunciation = None
 
     def translate(self, dest: str = "en"):
         translated = tranlator.translate(self.text, dest=dest)
+
+        if translated.pronunciation and translated.pronunciation != translated.text:
+            self.pronunciation = translated.pronunciation
+
         return translated.text
+
+    def pronounce(self):
+        return self.pronunciation
 
     def detect(self):
         detected = tranlator.detect(self.text)

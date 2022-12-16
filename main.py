@@ -25,7 +25,7 @@ Its is free and open source.
 app = FastAPI(
     title="Translate-kun API",
     description=description,
-    version="0.1.3",
+    version="0.1.4",
     openapi_tags=tags_metadata,
     redoc_url=None,
     docs_url="/docs",
@@ -87,6 +87,7 @@ def languages():
                         "text": "Hallo Dunia",
                         "translated": {
                             "text": "Hello World",
+                            "pronunciation": "",
                             "lang": {
                                 "detected": {
                                     "confidence": "100%",
@@ -109,6 +110,7 @@ def translate(text: str, dest: Union[str, None] = "en"):
             "text": text,
             "translated": {
                 "text": translate.translate(dest=dest),
+                "pronunciation": translate.pronounce(),
                 "lang": {
                     "detected": translate.detect(),
                     "dest": dest,
