@@ -19,7 +19,7 @@ description = """
 A simple API to translate text to any language.\n
 Its is free and open source.
 
-[GitHub](https://github.com/sachnun/translate-kun) | [Try it out](/docs)
+[GitHub](https://github.com/sachnun/translate-kun)
 """
 
 app = FastAPI(
@@ -27,7 +27,7 @@ app = FastAPI(
     description=description,
     version="0.1.3",
     openapi_tags=tags_metadata,
-    redoc_url="/redoc",
+    redoc_url=None,
     docs_url="/docs",
 )
 app.add_middleware(
@@ -38,10 +38,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# redirect to redoc
+# redirect to docs
 @app.get("/", include_in_schema=False)
 def redirect():
-    return RedirectResponse(url="/redoc")
+    return RedirectResponse(url="/docs")
 
 
 @app.get(
