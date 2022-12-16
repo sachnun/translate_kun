@@ -9,6 +9,10 @@ tags_metadata = [
         "name": "translate",
         "description": "Translate text to any language",
     },
+    {
+        "name": "detect",
+        "description": "Detect language of text",
+    },
 ]
 
 app = FastAPI(
@@ -67,6 +71,41 @@ def translate(text: str, dest: Union[str, None] = "en"):
                     "detected": translate.detect(),
                     "dest": dest,
                 },
+            },
+        },
+        status_code=200,
+    )
+
+
+@app.get(
+    "/detect",
+    tags=["detect"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "text": "Hallo Dunia",
+                        "lang": {
+                            "detected": "id",
+                            "meaning": "indonesian",
+                        },
+                    },
+                },
+            },
+        },
+    },
+)
+def detect(text: str):
+    translate = Translate(text)
+    detect = translate.detect()
+    return JSONResponse(
+        content={
+            "text": text,
+            "lang": {
+                "detected": detect,
+                "meaning": translate.supported_languages(lang=detect),
             },
         },
         status_code=200,

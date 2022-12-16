@@ -15,7 +15,7 @@ class Translate:
         detected = tranlator.detect(self.text)
         return detected.lang
 
-    def supported_languages(self):
+    def supported_languages(self, lang: str = None):
         languages = {
             "af": "afrikaans",
             "sq": "albanian",
@@ -125,7 +125,7 @@ class Translate:
             "yo": "yoruba",
             "zu": "zulu",
         }
-        return languages
+        return languages[lang] if lang in languages else None
 
 
 if __name__ == "__main__":
