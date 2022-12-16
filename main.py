@@ -1,10 +1,24 @@
 from typing import Union
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from utils.translate import Translate
 
-app = FastAPI()
+tags_metadata = [
+    {
+        "name": "translate",
+        "description": "Translate text to any language",
+    },
+]
+
+app = FastAPI(
+    title="Translate-kun API",
+    description="A simple API to translate text to any language",
+    version="0.1.0",
+    openapi_tags=tags_metadata,
+    redoc_url="/redoc",
+    docs_url="/docs",
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,30 +27,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# redirect to docs
+@app.get("/", include_in_schema=False)
+def redirect():
+    return RedirectResponse(url="/docs")
 
-@app.get("/")
-def read_root():
-    return JSONResponse(
-        content={
-            "message": "Welcome to the translation API",
-            "description": "This API is used to translate text from one language to another",
-            "version": "0.0.1",
-            "endpoints": {
-                "translate": {
-                    "method": "GET",
-                    "url": "/translate",
-                    "params": {
-                        "text": "The text to translate",
-                        "dest": "The language to translate to (default: en)",
+
+@app.get(
+    "/translate",
+    tags=["translate"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "text": "Hallo Dunia",
+                        "translated": {
+                            "text": "Hello World",
+                            "lang": {
+                                "detected": "id",
+                                "dest": "en",
+                            },
+                        },
                     },
-                }
+                },
             },
         },
-        status_code=200,
-    )
-
-
-@app.get("/translate")
+    },
+)
 def translate(text: str, dest: Union[str, None] = "en"):
     translate = Translate(text)
     return JSONResponse(
