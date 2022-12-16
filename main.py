@@ -18,7 +18,7 @@ tags_metadata = [
 app = FastAPI(
     title="Translate-kun API",
     description="A simple API to translate text to any language",
-    version="0.1.0",
+    version="0.1.2",
     openapi_tags=tags_metadata,
     redoc_url="/redoc",
     docs_url="/docs",
@@ -50,7 +50,11 @@ def redirect():
                         "translated": {
                             "text": "Hello World",
                             "lang": {
-                                "detected": "id",
+                                "detected": {
+                                    "confidence": "100%",
+                                    "detected": "id",
+                                    "meaning": "indonesian",
+                                },
                                 "dest": "en",
                             },
                         },
