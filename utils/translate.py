@@ -13,7 +13,27 @@ class Translate:
 
     def detect(self):
         detected = tranlator.detect(self.text)
-        return detected.lang
+
+        data = []
+        # check if detected list
+        if isinstance(detected.lang, list):
+            data = []
+            for lang, confidence in zip(detected.lang, detected.confidence):
+                data.append(
+                    {
+                        "confidence": self.__percentage(confidence),
+                        "detected": lang,
+                        "meaning": self.supported_languages(lang),
+                    }
+                )
+        else:
+            data = {
+                "confidence": self.__percentage(detected.confidence),
+                "detected": detected.lang,
+                "meaning": self.supported_languages(detected.lang),
+            }
+
+        return data
 
     def supported_languages(self, lang: str = None):
         languages = {
@@ -127,7 +147,10 @@ class Translate:
         }
         return languages[lang] if lang in languages else None
 
+    def __percentage(self, value: float = 0.0):
+        return str(round(value * 100, 2)) + "%"
+
 
 if __name__ == "__main__":
-    print(Translate("Hola").translate())
-    print(Translate("Hola").detect())
+    # print(Translate("Hola").translate())
+    print(Translate("apa kabar").detect())

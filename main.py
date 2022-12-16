@@ -88,6 +88,7 @@ def translate(text: str, dest: Union[str, None] = "en"):
                     "example": {
                         "text": "Hallo Dunia",
                         "lang": {
+                            "confidence": "100%",
                             "detected": "id",
                             "meaning": "indonesian",
                         },
@@ -99,14 +100,10 @@ def translate(text: str, dest: Union[str, None] = "en"):
 )
 def detect(text: str):
     translate = Translate(text)
-    detect = translate.detect()
     return JSONResponse(
         content={
             "text": text,
-            "lang": {
-                "detected": detect,
-                "meaning": translate.supported_languages(lang=detect),
-            },
+            "lang": translate.detect(),
         },
         status_code=200,
     )
