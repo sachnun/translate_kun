@@ -15,9 +15,16 @@ tags_metadata = [
     },
 ]
 
+description = """
+A simple API to translate text to any language.\n
+Its is free and open source.
+
+[GitHub](https://github.com/sachnun/translate-kun) | [Try it out](/docs)
+"""
+
 app = FastAPI(
     title="Translate-kun API",
-    description="A simple API to translate text to any language",
+    description=description,
     version="0.1.3",
     openapi_tags=tags_metadata,
     redoc_url="/redoc",
@@ -31,13 +38,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# redirect to docs
+# redirect to redoc
 @app.get("/", include_in_schema=False)
 def redirect():
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="/redoc")
 
 
-@app.get("/languages", tags=["translate"])
+@app.get(
+    "/languages",
+    tags=["translate"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "All languages available",
+                        "lang": {
+                            "af": "afrikaans",
+                            "sq": "albanian",
+                            "...": "...",
+                        },
+                    },
+                },
+            },
+        },
+    },
+)
 def languages():
     return JSONResponse(
         content={
