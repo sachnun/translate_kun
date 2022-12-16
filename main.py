@@ -18,7 +18,7 @@ tags_metadata = [
 app = FastAPI(
     title="Translate-kun API",
     description="A simple API to translate text to any language",
-    version="0.1.2",
+    version="0.1.3",
     openapi_tags=tags_metadata,
     redoc_url="/redoc",
     docs_url="/docs",
@@ -35,6 +35,17 @@ app.add_middleware(
 @app.get("/", include_in_schema=False)
 def redirect():
     return RedirectResponse(url="/docs")
+
+
+@app.get("/languages", tags=["translate"])
+def languages():
+    return JSONResponse(
+        content={
+            "message": "All languages available",
+            "lang": Translate().languages(),
+        },
+        status_code=200,
+    )
 
 
 @app.get(
