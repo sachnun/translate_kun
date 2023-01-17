@@ -165,9 +165,13 @@ def translate(
                     "example": {
                         "text": "Hallo Dunia",
                         "lang": {
-                            "confidence": "100%",
-                            "detected": "id",
-                            "meaning": "indonesian",
+                            "detected": {
+                                "confidence": "100%",
+                                "detected": "id",
+                                "meaning": "indonesian",
+                            },
+                            "src": "auto",
+                            "dest": "en"
                         },
                     },
                 },
