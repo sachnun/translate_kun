@@ -1,8 +1,17 @@
+import os, sys
 from typing import Union
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from utils.translate import Translate
+from pydictionary import Dictionary
+
+# disable print
+def blockPrint():
+    sys.stdout = open(os.devnull, "w")
+
+
+blockPrint()
 
 tags_metadata = [
     {
@@ -12,6 +21,10 @@ tags_metadata = [
     {
         "name": "detect",
         "description": "Detect language of text",
+    },
+    {
+        "name": "dictionary",
+        "description": "Get meaning, synonyms and antonyms of a word",
     },
 ]
 
@@ -171,7 +184,7 @@ def translate(
                                 "meaning": "indonesian",
                             },
                             "src": "auto",
-                            "dest": "en"
+                            "dest": "en",
                         },
                     },
                 },
@@ -185,6 +198,54 @@ def detect(text: str):
         content={
             "text": text,
             "lang": translate.detect(),
+        },
+        status_code=200,
+    )
+
+
+# dictionary
+@app.get(
+    "/dictionary",
+    tags=["dictionary"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "text": "hello",
+                        "dictionary": {
+                            # "meanings": None,
+                            "synonyms": ["greetings", "hi", "howdy"],
+                            "antonyms": ["adios", "au revoir", "goodbye"],
+                        },
+                    },
+                },
+            },
+        },
+        422: {
+            "description": "Invalid word",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Invalid word, max 1 word",
+                    },
+                },
+            },
+        },
+    },
+)
+# max 1 word
+def dictionary(text: str = Query(..., regex="^[a-zA-Z]+$"), meaning: bool = False):
+    dictionary = Dictionary(text, 3)
+    return JSONResponse(
+        content={
+            "text": text,
+            "dictionary": {
+                "meanings": dictionary.meanings() if meaning else None,
+                "synonyms": dictionary.synonyms(),
+                "antonyms": dictionary.antonyms(),
+            },
         },
         status_code=200,
     )
