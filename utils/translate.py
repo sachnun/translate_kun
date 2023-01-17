@@ -9,8 +9,8 @@ class Translate:
         self.text = text
         self.pronunciation = None
 
-    def translate(self, dest: str = "en"):
-        translated = tranlator.translate(self.text, dest=dest)
+    def translate(self, dest: str = "en", src: str = "auto"):
+        translated = tranlator.translate(self.text, dest=dest, src=src)
 
         if translated.pronunciation and translated.pronunciation != translated.text:
             self.pronunciation = translated.pronunciation
