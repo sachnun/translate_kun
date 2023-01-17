@@ -144,11 +144,10 @@ def translate(
                 "pronunciation": translate.pronounce(),
                 # if detect is true
                 "lang": {
-                    "detected": translate.detect(),
+                    "detected": translate.detect() if detect else None,
+                    "src": src,
                     "dest": dest,
-                }
-                if detect
-                else {},
+                },
             },
         },
         status_code=200,
