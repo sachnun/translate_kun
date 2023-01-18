@@ -30,14 +30,16 @@ class Translate:
             for lang, confidence in zip(detected.lang, detected.confidence):
                 data.append(
                     {
-                        "confidence": self.__percentage(confidence),
+                        # "confidence": self.__percentage(confidence),
+                        "confidence": confidence,
                         "detected": lang,
                         "meaning": self.__lang_meaning(lang),
                     }
                 )
         else:
             data = {
-                "confidence": self.__percentage(detected.confidence),
+                # "confidence": self.__percentage(detected.confidence),
+                "confidence": detected.confidence,
                 "detected": detected.lang,
                 "meaning": self.__lang_meaning(detected.lang),
             }
