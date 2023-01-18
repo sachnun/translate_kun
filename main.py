@@ -38,7 +38,7 @@ Its is free and open source.
 app = FastAPI(
     title="Translate-kun API",
     description=description,
-    version="0.1.5",
+    version="0.1.6",
     openapi_tags=tags_metadata,
     redoc_url=None,
     docs_url="/docs",
@@ -103,7 +103,7 @@ def languages():
                             "pronunciation": "",
                             "lang": {
                                 "detected": {
-                                    "confidence": "100%",
+                                    "confidence": 1,
                                     "detected": "id",
                                     "meaning": "indonesian",
                                 },
@@ -179,7 +179,7 @@ def translate(
                         "text": "Hallo Dunia",
                         "lang": {
                             "detected": {
-                                "confidence": "100%",
+                                "confidence": 1,
                                 "detected": "id",
                                 "meaning": "indonesian",
                             },
