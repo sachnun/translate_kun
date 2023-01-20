@@ -235,8 +235,8 @@ def detect(text: str):
         },
     },
 )
-# max 1 word
-def dictionary(text: str = Query(..., regex="^[a-zA-Z]+$"), meaning: bool = False):
+# max 3 word
+def dictionary(text: str = Query(..., regex="^[a-zA-Z ]{1,20}$"), meaning: bool = True):
     dictionary = Dictionary(text, 3)
     return JSONResponse(
         content={
