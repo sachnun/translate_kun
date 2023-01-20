@@ -22,6 +22,7 @@ hyperframe==5.2.0
 idna==2.10
 inflect==4.1.0
 joblib==1.2.0
+language-tool-python==2.7.1
 limits==2.7.2
 lxml==4.9.2
 mypy-extensions==0.4.3
