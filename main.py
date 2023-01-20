@@ -4,6 +4,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from utils.translate import Translate
+from utils.dictionary import WordForm
 from pydictionary import Dictionary
 
 # disable print
@@ -24,7 +25,7 @@ tags_metadata = [
     },
     {
         "name": "dictionary",
-        "description": "Get meaning, synonyms and antonyms of a word",
+        "description": "Dictionary of words",
     },
 ]
 
@@ -38,7 +39,7 @@ Its is free and open source.
 app = FastAPI(
     title="Translate-kun API",
     description=description,
-    version="0.1.6",
+    version="0.2.0",
     openapi_tags=tags_metadata,
     redoc_url=None,
     docs_url="/docs",
@@ -215,9 +216,18 @@ def detect(text: str):
                     "example": {
                         "text": "hello",
                         "dictionary": {
-                            # "meanings": None,
+                            "meanings": [
+                                "a greeting or salutation",
+                                "an expression of greeting",
+                            ],
                             "synonyms": ["greetings", "hi", "howdy"],
                             "antonyms": ["adios", "au revoir", "goodbye"],
+                            "conjugate": {
+                                "verb": ["hello", "helloed", "helloing", "hellos"],
+                                "adjective": ["hello", "helloed", "helloing", "hellos"],
+                                "noun": ["hello", "helloed", "helloing", "hellos"],
+                                "adverb": ["hello", "helloed", "helloing", "hellos"],
+                            },
                         },
                     },
                 },
@@ -238,6 +248,7 @@ def detect(text: str):
 # max 3 word
 def dictionary(text: str = Query(..., regex="^[a-zA-Z ]{1,20}$"), meaning: bool = True):
     dictionary = Dictionary(text, 3)
+    conjugate = WordForm(text)
     return JSONResponse(
         content={
             "text": text,
@@ -245,6 +256,12 @@ def dictionary(text: str = Query(..., regex="^[a-zA-Z ]{1,20}$"), meaning: bool 
                 "meanings": dictionary.meanings() if meaning else None,
                 "synonyms": dictionary.synonyms(),
                 "antonyms": dictionary.antonyms(),
+                "conjugate": {
+                    "verb": conjugate.get_verb(),
+                    "adjective": conjugate.get_adjective(),
+                    "noun": conjugate.get_noun(),
+                    "adverb": conjugate.get_adverb(),
+                },
             },
         },
         status_code=200,
