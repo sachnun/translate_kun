@@ -3,9 +3,10 @@ from typing import Union
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
+from pydictionary import Dictionary
 from utils.translate import Translate
 from utils.dictionary import WordForm
-from pydictionary import Dictionary
+from utils.spellchecker import Spellchecker
 
 # disable print
 def blockPrint():
@@ -20,12 +21,12 @@ tags_metadata = [
         "description": "Translate text to any language",
     },
     {
-        "name": "detect",
-        "description": "Detect language of text",
+        "name": "dictionary",
+        "description": "Dictionary is a tool that defines words",
     },
     {
-        "name": "dictionary",
-        "description": "Dictionary of words",
+        "name": "spellcheck",
+        "description": "Spellchecker is a tool that checks the spelling of words",
     },
 ]
 
@@ -84,6 +85,42 @@ def languages():
         content={
             "message": "All languages available",
             "lang": Translate().languages(),
+        },
+        status_code=200,
+    )
+
+
+@app.get(
+    "/detect",
+    tags=["translate"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "text": "Hallo Dunia",
+                        "lang": {
+                            "detected": {
+                                "confidence": 1,
+                                "detected": "id",
+                                "meaning": "indonesian",
+                            },
+                            "src": "auto",
+                            "dest": "en",
+                        },
+                    },
+                },
+            },
+        },
+    },
+)
+def detect(text: str):
+    translate = Translate(text)
+    return JSONResponse(
+        content={
+            "text": text,
+            "lang": translate.detect(),
         },
         status_code=200,
     )
@@ -168,42 +205,6 @@ def translate(
     )
 
 
-@app.get(
-    "/detect",
-    tags=["detect"],
-    responses={
-        200: {
-            "description": "Successful Response",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "text": "Hallo Dunia",
-                        "lang": {
-                            "detected": {
-                                "confidence": 1,
-                                "detected": "id",
-                                "meaning": "indonesian",
-                            },
-                            "src": "auto",
-                            "dest": "en",
-                        },
-                    },
-                },
-            },
-        },
-    },
-)
-def detect(text: str):
-    translate = Translate(text)
-    return JSONResponse(
-        content={
-            "text": text,
-            "lang": translate.detect(),
-        },
-        status_code=200,
-    )
-
-
 # dictionary
 @app.get(
     "/dictionary",
@@ -263,6 +264,35 @@ def dictionary(text: str = Query(..., regex="^[a-zA-Z ]{1,20}$"), meaning: bool 
                     "adverb": conjugate.get_adverb(),
                 },
             },
+        },
+        status_code=200,
+    )
+
+
+# spell check
+@app.get(
+    "/spellcheck",
+    tags=["spellcheck"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "text": "helloo",
+                        "spellcheck": ["helloo is not a word, did you mean hello?"],
+                    },
+                },
+            },
+        },
+    },
+)
+def spellcheck(text: str, lang: str = "en-US"):
+    spellcheck = Spellchecker(text, lang)
+    return JSONResponse(
+        content={
+            "text": text,
+            "spellcheck": spellcheck.messages(),
         },
         status_code=200,
     )
