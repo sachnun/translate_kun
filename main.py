@@ -1,6 +1,6 @@
 import os, sys
 from typing import Union
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
 from pydictionary import Dictionary
@@ -8,6 +8,7 @@ from pydictionary import Dictionary
 from utils.translate import Translate
 from utils.dictionary import WordForm
 from utils.spellchecker import Spellchecker
+from utils.transcribe import Transcribe
 from utils.speech import Speech
 
 # disable print
@@ -34,6 +35,10 @@ tags_metadata = [
         "name": "tts",
         "description": "Text to speech is a tool that converts text to speech",
     },
+    {
+        "name": "transcribe",
+        "description": "Transcribe is a tool that converts speech to text",
+    },
 ]
 
 description = """
@@ -46,7 +51,7 @@ Its is free and open source.
 app = FastAPI(
     title="Translate-kun API",
     description=description,
-    version="0.2.0",
+    version="0.2.2",
     openapi_tags=tags_metadata,
     redoc_url=None,
     docs_url="/docs",
@@ -341,7 +346,83 @@ def tts(
     )
 
 
+# post send audio file
+@app.post(
+    "/transcribe",
+    tags=["transcribe"],
+    responses={
+        200: {
+            "description": "Success",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Success transcribe",
+                        "data": {
+                            "text": "saya ingin makan nasi goreng",
+                            "confidence": 0.9,
+                        },
+                    }
+                }
+            },
+        },
+        400: {
+            "description": "Bad Request",
+            "content": {"application/json": {"example": {"detail": "File not found"}}},
+        },
+        500: {
+            "description": "Internal Server Error",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Internal Server Error"},
+                }
+            },
+        },
+    },
+)
+def transcribe(file: UploadFile = File(...)):
+    # random filename
+    import random
+    import string
+
+    filename = "".join(
+        random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+    )
+    filename = f"{filename}.ogg"
+
+    try:
+        # save file
+        with open(filename, "wb") as buffer:
+            buffer.write(file.file.read())
+
+        # transcribe
+        transcribe = Transcribe()
+        transcribe.load(filename)
+
+        # return result
+        return JSONResponse(
+            status_code=200,
+            content={
+                "message": "Success transcribe",
+                "data": {
+                    "text": transcribe.text(),
+                    "confidence": transcribe.confidence(),
+                },
+            },
+        )
+    except FileNotFoundError:
+        return JSONResponse(
+            status_code=400,
+            content={"detail": "File not found"},
+        )
+    except Exception as e:
+        print(e)
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Internal Server Error"},
+        )
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, workers=2)
