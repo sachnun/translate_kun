@@ -1,17 +1,23 @@
-FROM python:3.8-slim-buster
+# install python latest version
+FROM python:latest
 
 # install ffmpeg
-# RUN apt-get update && apt-get install -y ffmpeg
+RUN apt-get -y update && apt-get -y upgrade && apt-get install -y --no-install-recommends ffmpeg
 
-WORKDIR /app
+# set working directory
+WORKDIR /usr/src/app
 
+# set environment variables
 COPY requirements.txt requirements.txt
 
+# install dependencies
 RUN pip3 install -r requirements.txt
 
+# copy project
 COPY . .
 
-CMD [ "python3", "-m" , "uvicorn", "main:app", "--host=0.0.0.0"]
+# run server
+CMD [ "python3", "./main.py" ]
 
 # external port
 EXPOSE 8000
