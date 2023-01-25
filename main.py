@@ -2,11 +2,13 @@ import os, sys
 from typing import Union
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
 from pydictionary import Dictionary
+
 from utils.translate import Translate
 from utils.dictionary import WordForm
 from utils.spellchecker import Spellchecker
+from utils.speech import Speech
 
 # disable print
 def blockPrint():
@@ -27,6 +29,10 @@ tags_metadata = [
     {
         "name": "spellcheck",
         "description": "Spellchecker is a tool that checks the spelling of words",
+    },
+    {
+        "name": "tts",
+        "description": "Text to speech is a tool that converts text to speech",
     },
 ]
 
@@ -295,6 +301,43 @@ def spellcheck(text: str, lang: str = "en-US"):
             "spellcheck": spellcheck.messages(),
         },
         status_code=200,
+    )
+
+
+# text to speech
+@app.get(
+    "/tts",
+    tags=["tts"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "audio/mp3": {
+                    "example": {
+                        "lang": "en",
+                        "text": "hello",
+                    },
+                },
+            },
+        },
+    },
+)
+def tts(
+    # text with description
+    text: str = Query(
+        ...,
+        description="Text to speech",
+        example="hello",
+    ),
+    lang: str = "en",
+):
+    tts = Speech(lang)
+    return StreamingResponse(
+        content=tts.speak(text),
+        media_type="audio/mp3",
+        headers={
+            "Content-Disposition": "attachment; filename=speech.mp3",
+        },
     )
 
 
