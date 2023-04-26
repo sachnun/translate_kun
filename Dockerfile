@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # run server as uvicorn, port 8000, host 0.0.0.0
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:web", "--host", "0.0.0.0", "--port", "8000"]
 
 # external port
 EXPOSE 8000
