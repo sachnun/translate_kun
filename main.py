@@ -3,7 +3,7 @@ from typing import Union
 from fastapi import FastAPI, Query, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
-from pydictionary import PyDictionary
+from pydictionary import Dictionary
 
 from utils.translate import Translate
 from utils.dictionary import WordForm
@@ -261,7 +261,7 @@ def translate(
 )
 # max 3 word
 def dictionary(text: str = Query(..., regex="^[a-zA-Z ]{1,20}$"), meaning: bool = True):
-    dictionary = PyDictionary(text)
+    dictionary = Dictionary(text)
     conjugate = WordForm(text)
     return JSONResponse(
         content={
