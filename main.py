@@ -3,13 +3,14 @@ from typing import Union
 from fastapi import FastAPI, Query, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
-from pydictionary import Dictionary
+from pydictionary import PyDictionary
 
 from utils.translate import Translate
 from utils.dictionary import WordForm
 from utils.spellchecker import Spellchecker
 from utils.transcribe import Transcribe
 from utils.speech import Speech
+
 
 # disable print
 def blockPrint():
@@ -63,6 +64,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # redirect to docs
 @app.get("/", include_in_schema=False)
@@ -259,7 +261,7 @@ def translate(
 )
 # max 3 word
 def dictionary(text: str = Query(..., regex="^[a-zA-Z ]{1,20}$"), meaning: bool = True):
-    dictionary = Dictionary(text, 3)
+    dictionary = PyDictionary(text)
     conjugate = WordForm(text)
     return JSONResponse(
         content={
