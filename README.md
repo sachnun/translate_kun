@@ -267,7 +267,3 @@ This project is licensed under the [MIT License](LICENSE).
 - [FastAPI](https://fastapi.tiangolo.com/) - A modern, fast (high-performance), web framework for building APIs with Python 3.7+.
 - [pydictionary](https://pypi.org/project/pydictionary/) - A Python library to get meanings, translations, synonyms, antonyms, and conjugations of words.
 - Other dependencies used in the project are mentioned in the [requirements.txt](requirements.txt) file.
-
----
-
-This project is developed and maintained by [Your Name]. Feel free to contact me at [your-email@example.com] for any questions or inquiries.
